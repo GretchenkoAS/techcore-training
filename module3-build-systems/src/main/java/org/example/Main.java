@@ -1,12 +1,16 @@
 package org.example;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class Main {
-    public static void main(String[] args) {
-        String nullString = null;
-        String notNullString = "Andrew";
-        System.out.println("is null or empty: " + Strings.isNullOrEmpty(nullString));
-        System.out.println("is null or empty: " + Strings.isNullOrEmpty(notNullString));
+    public static void main(String[] args) throws IOException {
+        Properties properties = new Properties();
+        try(InputStream inputStream =Main.class.getClassLoader().getResourceAsStream("application.properties")) {
+            properties.load(inputStream);
+        }
+
+        System.out.println("DB: " + properties.getProperty("db.url"));
     }
 }
