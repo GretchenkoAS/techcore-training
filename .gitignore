@@ -1,0 +1,6 @@
+/.idea/
+/module3-build-systems/.gradle/
+/module3-build-systems/gradle/
+/module3-build-systems/build/
+/module3-build-systems/app-console/build/
+/module3-build-systems/core-lib/build/
