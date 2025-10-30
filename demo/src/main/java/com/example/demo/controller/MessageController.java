@@ -13,8 +13,13 @@ public class MessageController {
         this.service = service;
     }
 
-    @GetMapping("/message")
-    public String showMessage() {
-        return service.getMessage();
+    @GetMapping("/message-from-properties")
+    public String getMessageFromProperties() {
+        return service.getMessageFromProperties();
+    }
+
+    @GetMapping("/message-from-db")
+    public String getMessageFromDb() {
+        return service.getMessageFromDb();
     }
 }
