@@ -34,4 +34,13 @@ public class Book {
     public void setAuthor(String author) {
         this.author = author;
     }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", author='" + author + '\'' +
+                '}';
+    }
 }

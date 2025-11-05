@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.domen.Book;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,5 +21,11 @@ public class BookController {
         } else {
             return ResponseEntity.ok("No title parameter provided");
         }
+    }
+
+    @PostMapping
+    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+        System.out.println(book);
+        return ResponseEntity.ok(book);
     }
 }
