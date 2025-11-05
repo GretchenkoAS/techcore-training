@@ -36,4 +36,10 @@ public class BookController {
         System.out.println(dto);
         return ResponseEntity.ok(service.createBook(dto));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable("id") Long id, @RequestBody BookDto dto) {
+        System.out.println(dto);
+        return ResponseEntity.ok(service.updateBook(id, dto));
+    }
 }
