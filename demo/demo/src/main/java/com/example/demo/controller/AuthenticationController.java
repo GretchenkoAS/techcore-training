@@ -1,15 +1,29 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.UserDto;
+import com.example.demo.service.CustomUserDetailsService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class AuthenticationController {
 
-    @PostMapping("/auth")
-    public String authentication() {
-        return "Authentication!";
+    CustomUserDetailsService service;
+
+    public AuthenticationController(CustomUserDetailsService service) {
+        this.service = service;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody UserDto dto) {
+        service.register(dto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("User registered successfully");
     }
 }
