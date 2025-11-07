@@ -28,6 +28,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String role;
 
+    protected User() {
+
+    }
+
     public User(String username, String password, String role) {
         this.username = username;
         this.password = password;
