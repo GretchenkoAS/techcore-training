@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.UserDto;
 import com.example.demo.service.CustomUserDetailsService;
+import com.example.demo.tokenprovider.JwtTokenProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,10 +19,13 @@ public class AuthenticationController {
 
     private final CustomUserDetailsService service;
     private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthenticationController(CustomUserDetailsService service, AuthenticationManager authenticationManager) {
+    public AuthenticationController(CustomUserDetailsService service, AuthenticationManager authenticationManager,
+            JwtTokenProvider jwtTokenProvider) {
         this.service = service;
         this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("/register")
@@ -41,7 +45,8 @@ public class AuthenticationController {
                             dto.getPassword()
                     )
             );
-            return ResponseEntity.ok("Login successful");
+            String token = jwtTokenProvider.generateToken(dto.getUsername());
+            return ResponseEntity.ok(token);
         }
         catch (BadCredentialsException ex) {
             throw new BadCredentialsException("Invalid username or password");
