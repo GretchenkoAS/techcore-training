@@ -16,9 +16,16 @@ public class BookTest {
 
     @Test
     void testSetNewName() {
+        //Given
         String newName = "The Silmarillion";
         String author = "Tolkien";
+        assertEquals("The Lord of the Rings", book.getName());
+        assertEquals(author, book.getAuthor());
+
+        //When
         book.setName(newName);
+
+        //Then
         assertEquals(newName, book.getName());
         assertEquals(author, book.getAuthor());
     }
