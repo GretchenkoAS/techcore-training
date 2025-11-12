@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -55,5 +56,14 @@ public class BookServiceTest {
 
         // When and then
         assertThrows(BookNotFoundException.class, () -> service.findById(invalidId));
+    }
+
+    @Test
+    void testDeleteBookById() {
+        // When
+        service.deleteBookById(1L);
+
+        // Then
+        Mockito.verify(repository, Mockito.times(1)).deleteById(1L);
     }
 }

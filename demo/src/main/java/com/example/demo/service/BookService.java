@@ -39,4 +39,8 @@ public class BookService {
         Optional<Book> optionalBook = repository.findById(id);
         return optionalBook.orElseThrow(() -> new BookNotFoundException(id));
     }
+
+    public void deleteBookById(Long id) {
+        repository.deleteById(id);
+    }
 }
