@@ -4,6 +4,7 @@ import com.example.demo.domen.Book;
 import com.example.demo.dto.BookDto;
 import com.example.demo.service.BookService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,9 @@ public class BookController {
     @PostMapping
     public ResponseEntity<Book> createBook(@RequestBody BookDto dto) {
         System.out.println(dto);
+        if(dto.getName() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(service.createBook(dto));
     }
 
