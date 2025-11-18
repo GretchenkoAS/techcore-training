@@ -23,5 +23,11 @@ services:
     ports:
       - "8080:8080"
 
+  notification:
+    build: ../notificationservice
+    container_name: notificationservice
+    ports:
+      - "8081:8081"
+
 volumes:
   db_data:

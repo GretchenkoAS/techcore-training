@@ -6,6 +6,7 @@ import com.example.demo.exception.BookNotFoundException;
 import com.example.demo.repository.BookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -13,15 +14,19 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository repository;
+    private final RestTemplate restTemplate;
 
-
-
-    public BookService(BookRepository repository) {
+    public BookService(BookRepository repository, RestTemplate restTemplate) {
         this.repository = repository;
+        this.restTemplate = restTemplate;
     }
 
     public Book createBook(BookDto dto) {
         Book book = new Book(dto.getName(), dto.getAuthor());
+
+        String notificationUrl = "http://notificationservice:8081/notify";
+        restTemplate.postForObject(notificationUrl, "New book created: " + book.getName(), String.class);
+
         repository.save(book);
         return book;
     }
