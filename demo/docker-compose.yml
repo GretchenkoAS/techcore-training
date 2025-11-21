@@ -24,13 +24,10 @@ services:
     ports:
       - "8080:8080"
 
-  notification:
+  notificationservice:
     build: ../notificationservice
-    container_name: notificationservice
     depends_on:
       - eurekaserver
-    ports:
-      - "8081:8081"
 
   eurekaserver:
     build: ../eurekaserver
