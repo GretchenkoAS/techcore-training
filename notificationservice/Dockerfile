@@ -1,23 +1,22 @@
-FROM gradle:8.3-jdk21 AS build
+FROM gradle:8.14-jdk21 AS build
+
 WORKDIR /app
+
 COPY build.gradle.kts settings.gradle.kts ./
-FROM eclipse-temurin:21-jdk AS build
-
-WORKDIR /app
-
-COPY gradlew .
 COPY gradle/ gradle/
-COPY build.gradle.kts .
-COPY settings.gradle.kts .
+
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+    gradle dependencies --no-daemon || true
+
 COPY src/ src/
 
-RUN chmod +x ./gradlew
-RUN ./gradlew build -x test --no-daemon
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+    gradle build -x test --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar /app/app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

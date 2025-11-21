@@ -1,48 +1,30 @@
 package com.example.demo.service;
 
+import com.example.demo.client.NotificationClient;
 import com.example.demo.domen.Book;
 import com.example.demo.dto.BookDto;
 import com.example.demo.exception.BookNotFoundException;
 import com.example.demo.repository.BookRepository;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BookService {
 
     private final BookRepository repository;
-    private final RestTemplate restTemplate;
-    private final DiscoveryClient discoveryClient;
+    private final NotificationClient notificationClient;
 
-    public BookService(BookRepository repository, RestTemplate restTemplate, DiscoveryClient discoveryClient) {
+    public BookService(BookRepository repository, NotificationClient notificationClient) {
         this.repository = repository;
-        this.restTemplate = restTemplate;
-        this.discoveryClient = discoveryClient;
+        this.notificationClient = notificationClient;
     }
 
     public Book createBook(BookDto dto) {
         Book book = new Book(dto.getName(), dto.getAuthor());
 
-//        List<ServiceInstance> instances
-//                = discoveryClient.getInstances("notificationservice");
-//
-//        if (instances == null || instances.isEmpty()) {
-//            throw new IllegalStateException("No instances of notificationservice found");
-//        }
-//
-//        ServiceInstance instance = instances.getFirst();
-//        String baseUrl = instance.getUri().toString();
-//
-//        restTemplate.postForObject(baseUrl + "/notify", "New book created: " + book.getName(), String.class);
-        String url = "http://NOTIFICATIONSERVICE/notify";
-        restTemplate.postForObject(url, "New book created: " + book.getName(), String.class);
-
+        notificationClient.notify("New book created: " + book.getName());
         repository.save(book);
         return book;
     }
