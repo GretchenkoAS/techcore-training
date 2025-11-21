@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: my_app
+    depends_on:
+      - db
+      - eurekaserver
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+    ports:
+      - "8080:8080"
+
+  notificationservice:
+    build: ../notificationservice
+    depends_on:
+      - eurekaserver
+
+  eurekaserver:
+    build: ../eurekaserver
+    container_name: eurekaserver
+    ports:
+      - "8761:8761"
+
+volumes:
+  db_data:
