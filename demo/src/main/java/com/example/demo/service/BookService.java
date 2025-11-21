@@ -29,17 +29,19 @@ public class BookService {
     public Book createBook(BookDto dto) {
         Book book = new Book(dto.getName(), dto.getAuthor());
 
-        List<ServiceInstance> instances
-                = discoveryClient.getInstances("notificationservice");
-
-        if (instances == null || instances.isEmpty()) {
-            throw new IllegalStateException("No instances of notificationservice found");
-        }
-
-        ServiceInstance instance = instances.getFirst();
-        String baseUrl = instance.getUri().toString();
-
-        restTemplate.postForObject(baseUrl + "/notify", "New book created: " + book.getName(), String.class);
+//        List<ServiceInstance> instances
+//                = discoveryClient.getInstances("notificationservice");
+//
+//        if (instances == null || instances.isEmpty()) {
+//            throw new IllegalStateException("No instances of notificationservice found");
+//        }
+//
+//        ServiceInstance instance = instances.getFirst();
+//        String baseUrl = instance.getUri().toString();
+//
+//        restTemplate.postForObject(baseUrl + "/notify", "New book created: " + book.getName(), String.class);
+        String url = "http://NOTIFICATIONSERVICE/notify";
+        restTemplate.postForObject(url, "New book created: " + book.getName(), String.class);
 
         repository.save(book);
         return book;
