@@ -16,6 +16,7 @@ services:
     container_name: my_app
     depends_on:
       - db
+      - eurekaserver
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
       SPRING_DATASOURCE_USERNAME: postgres
@@ -26,8 +27,16 @@ services:
   notification:
     build: ../notificationservice
     container_name: notificationservice
+    depends_on:
+      - eurekaserver
     ports:
       - "8081:8081"
+
+  eurekaserver:
+    build: ../eurekaserver
+    container_name: eurekaserver
+    ports:
+      - "8761:8761"
 
 volumes:
   db_data:
