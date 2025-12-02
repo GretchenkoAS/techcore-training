@@ -26,6 +26,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.postgresql:postgresql")
+	implementation("org.springframework.kafka:spring-kafka")
 	runtimeOnly("com.h2database:h2")
 	testImplementation("org.testcontainers:postgresql")
 	testImplementation("org.testcontainers:junit-jupiter")

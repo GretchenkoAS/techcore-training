@@ -17,6 +17,7 @@ services:
     depends_on:
       - db
       - eurekaserver
+      - kafka
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
       SPRING_DATASOURCE_USERNAME: postgres
@@ -28,6 +29,8 @@ services:
     build: ../notificationservice
     depends_on:
       - eurekaserver
+      - kafka
+      - app
 
   eurekaserver:
     build: ../eurekaserver

@@ -1,10 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.client.NotificationClient;
 import com.example.demo.domen.Book;
 import com.example.demo.dto.BookDto;
+import com.example.demo.event.BookCreatedEvent;
 import com.example.demo.exception.BookNotFoundException;
 import com.example.demo.repository.BookRepository;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,18 +15,25 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository repository;
-    private final NotificationClient notificationClient;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public BookService(BookRepository repository, NotificationClient notificationClient) {
+    public BookService(BookRepository repository, KafkaTemplate<String, Object> kafkaTemplate) {
         this.repository = repository;
-        this.notificationClient = notificationClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public Book createBook(BookDto dto) {
         Book book = new Book(dto.getName(), dto.getAuthor());
 
-        notificationClient.notify("New book created: " + book.getName());
         repository.save(book);
+
+        BookCreatedEvent event = new BookCreatedEvent(
+                book.getId(),
+                book.getName(),
+                book.getAuthor()
+        );
+
+        kafkaTemplate.send("book_events", book.getId().toString(), event);
         return book;
     }
 
