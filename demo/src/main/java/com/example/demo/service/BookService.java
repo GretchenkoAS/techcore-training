@@ -33,7 +33,9 @@ public class BookService {
                 book.getAuthor()
         );
 
-        kafkaTemplate.send("book_events", book.getId().toString(), event);
+        for (int i = 0; i < 10; i++) {
+            kafkaTemplate.send("book_events", book.getId().toString(), event);
+        }
         return book;
     }
 
