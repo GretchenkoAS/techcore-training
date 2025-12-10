@@ -4,7 +4,10 @@ import com.example.demo.event.BookCreatedEvent;
 import com.example.demo.model.Notification;
 import com.example.demo.repository.NotificationRepository;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class NotificationService {
@@ -15,14 +18,18 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    @KafkaListener(topics = "book_events", groupId = "notificationservice")
-    public void handle(BookCreatedEvent event) {
-        System.out.println("!!!!!!!!!!!!!!!!!: " + event);
-        Notification notification = new Notification(event.id(),
-                String.format("New book created: %s (%s)", event.name(), event.author()));
-        notificationRepository.save(notification);
-        System.out.println("!!!!!!!!!!!!!!!!!: BOOK SAVED");
+    @Async("notificationServiceExecutor")
+    public CompletableFuture<Notification> processNotificationAsync(BookCreatedEvent event) {
+        try {
+            System.out.println("!!!!!!!!!!!!!!!!!: " + event);
+            Notification notification = new Notification(event.id(),
+                    String.format("New book created: %s (%s)", event.name(), event.author()));
+            notificationRepository.save(notification);
+            System.out.println("!!!!!!!!!!!!!!!!!: BOOK SAVED");
+
+            return CompletableFuture.completedFuture(notification);
+        } catch (Exception ex) {
+            return CompletableFuture.failedFuture(ex);
+        }
     }
-
-
 }
