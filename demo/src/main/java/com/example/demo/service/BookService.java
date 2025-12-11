@@ -1,10 +1,14 @@
 package com.example.demo.service;
 
 import com.example.demo.domen.Book;
+import com.example.demo.domen.OutboxEvent;
 import com.example.demo.dto.BookDto;
 import com.example.demo.event.BookCreatedEvent;
 import com.example.demo.exception.BookNotFoundException;
 import com.example.demo.repository.BookRepository;
+import com.example.demo.repository.OutboxRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,14 +19,17 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository repository;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final OutboxRepository outboxRepository;
+    private final ObjectMapper objectMapper;
 
-    public BookService(BookRepository repository, KafkaTemplate<String, Object> kafkaTemplate) {
+    public BookService(BookRepository repository, OutboxRepository outboxRepository, ObjectMapper objectMapper) {
         this.repository = repository;
-        this.kafkaTemplate = kafkaTemplate;
+        this.outboxRepository = outboxRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public Book createBook(BookDto dto) {
+    @Transactional
+    public Book createBook(BookDto dto) throws JsonProcessingException {
         Book book = new Book(dto.getName(), dto.getAuthor());
 
         repository.save(book);
@@ -33,8 +40,12 @@ public class BookService {
                 book.getAuthor()
         );
 
-        kafkaTemplate.send("book_events", book.getId().toString(), event);
-        return book;
+        OutboxEvent outboxEvent = new OutboxEvent();
+        outboxEvent.setAggregateId(book.getId());
+        outboxEvent.setEventType("BookCreatedEvent");
+        outboxEvent.setPayload(objectMapper.writeValueAsString(event));
+
+        outboxRepository.save(outboxEvent);        return book;
     }
 
     @Transactional

@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.domen.Book;
 import com.example.demo.dto.BookDto;
 import com.example.demo.service.BookService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody BookDto dto) {
+    public ResponseEntity<Book> createBook(@RequestBody BookDto dto) throws JsonProcessingException {
         System.out.println(dto);
         if(dto.getName() == null) {
             return ResponseEntity.badRequest().build();
