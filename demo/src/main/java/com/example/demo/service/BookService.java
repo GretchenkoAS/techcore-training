@@ -9,6 +9,7 @@ import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.OutboxRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +58,9 @@ public class BookService {
         return book;
     }
 
+    @Cacheable(value = "books", key = "#id")
     public Book findById(Long id) {
+        System.out.println("!!!!!!!!!!!!!!!!! FROM POSTGRES");
         Optional<Book> optionalBook = repository.findById(id);
         return optionalBook.orElseThrow(() -> new BookNotFoundException(id));
     }

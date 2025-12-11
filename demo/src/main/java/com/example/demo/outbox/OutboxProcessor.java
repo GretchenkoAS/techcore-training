@@ -20,7 +20,7 @@ public class OutboxProcessor {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 30000)
     @Transactional
     public void processOutbox() {
         List<OutboxEvent> events =
