@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableScheduling
 @EnableCaching
-public class Module5RestApiApplication {
+public class BookServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Module5RestApiApplication.class, args);
+		SpringApplication.run(BookServiceApplication.class, args);
 	}
 
 }
