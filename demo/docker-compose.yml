@@ -59,6 +59,8 @@ services:
 
   configserver:
     build: ../configserver
+    depends_on:
+      - eurekaserver
     ports:
       - "8888:8888"
 
