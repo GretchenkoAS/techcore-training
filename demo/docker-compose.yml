@@ -22,10 +22,14 @@ services:
   bookservice:
     build: .
     depends_on:
-      - db
-      - eurekaserver
-      - kafka
-      - configserver
+      db:
+        condition: service_started
+      eurekaserver:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      configserver:
+        condition: service_started
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
       SPRING_DATASOURCE_USERNAME: postgres
@@ -42,6 +46,14 @@ services:
       - mongo
       - configserver
 
+  apigateway:
+    build: ../apigateway
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+
   mongo:
     image: mongo:6
     depends_on:
@@ -56,6 +68,12 @@ services:
     container_name: eurekaserver
     ports:
       - "8761:8761"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   configserver:
     build: ../configserver
