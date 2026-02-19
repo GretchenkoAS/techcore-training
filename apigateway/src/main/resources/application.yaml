@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: apigateway
+  main:
+    web-application-type: reactive
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: true
+        max-retries-on-same-service-instance: 3
+        max-retries-on-next-service-instance: 1
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes:
+        - id: bookservice
+          uri: lb://bookservice
+          predicates:
+            - Path=/books/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: bookServiceCircuitBreaker
+                fallbackUri: forward:/fallback/books
+            - name: Retry
+              args:
+                retries: 3
+                methods: POST
+                exceptions:
+                  - java.io.IOException
+                  - java.util.concurrent.TimeoutException
+                firstBackoff: 100ms
+                maxBackoff: 1s
+                factor: 2
+                basedOnPreviousValue: false
+
+server:
+  port: 8083
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      bookServiceCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+  bulkhead:
+    instances:
+      bookServiceCircuitBreaker:
+        maxConcurrentCalls: 5
+        maxWaitDuration: 0s
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    service-url:
+      defaultZone: http://eurekaserver:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+    initial-instance-info-replication-interval-seconds: 5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
